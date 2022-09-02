@@ -1,11 +1,11 @@
-#include "udf-my.h"
+#include "udf-youyan.h"
 #include <bitset>
 
 using namespace std;
 
 /**
  * DROP FUNCTION slideleft(int,int);
- * CREATE FUNCTION slideleft(int,int) RETURNS INT LOCATION '/udf-dir/libudfmy.so' symbol='SlideLeft';
+ * CREATE FUNCTION slideleft(int,int) RETURNS INT LOCATION '/udf-dir/libudfyouyan.so' symbol='SlideLeft';
  */ 
 IMPALA_UDF_EXPORT
 IntVal SlideLeft(FunctionContext* context, const IntVal& arg1, const IntVal& arg2) {
@@ -16,7 +16,7 @@ IntVal SlideLeft(FunctionContext* context, const IntVal& arg1, const IntVal& arg
 
 /**
  * DROP FUNCTION slideright(int,int);
- * CREATE FUNCTION slideright(int,int) RETURNS INT LOCATION '/udf-dir/libudfmy.so' symbol='SlideRight';
+ * CREATE FUNCTION slideright(int,int) RETURNS INT LOCATION '/udf-dir/libudfyouyan.so' symbol='SlideRight';
  */ 
 IMPALA_UDF_EXPORT
 IntVal SlideRight(FunctionContext* context, const IntVal& arg1, const IntVal& arg2) {
@@ -42,7 +42,7 @@ IntVal SlideRight(FunctionContext* context, const IntVal& arg1, const IntVal& ar
 
 /**
  * DROP FUNCTION bitcount(int ...);
- * CREATE FUNCTION bitcount(int ...) RETURNS INT LOCATION '/udf-dir/libudfmy.so' symbol='BitCount';
+ * CREATE FUNCTION bitcount(int ...) RETURNS INT LOCATION '/udf-dir/libudfyouyan.so' symbol='BitCount';
  */
 IMPALA_UDF_EXPORT
 IntVal BitCount(FunctionContext* context, int num_args, const IntVal* args){
@@ -72,20 +72,28 @@ IntVal BitCount(FunctionContext* context, int num_args, const IntVal* args){
  *                                    1111 , 0000 0000 0000 0000 0000 0000 0000 0001 , 0000 0
  * 
  * DROP FUNCTION range_bitcount(int,int,int ...);
- * CREATE FUNCTION range_bitcount(int,int,int ...) RETURNS INT LOCATION '/udf-dir/libudfmy.so' symbol='RangeBitCount';
+ * CREATE FUNCTION range_bitcount(int,int,int ...) RETURNS INT LOCATION '/udf-dir/libudfyouyan.so' symbol='RangeBitCount';
  */
 IMPALA_UDF_EXPORT
-IntVal RangeBitCount(FunctionContext* context, const IntVal& from, const IntVal& end,int num_args, const IntVal* args){
+IntVal RangeBitCount(FunctionContext* context, const IntVal& from, const IntVal& to,int num_args, const IntVal* args){
 
-    if(from.val < 0 || end.val < 0){
+    if(from.val < 0 || to.val < 0 || from.val > to.val){
         return -1;
     }
 
     bitset<32> bin;
 
-    int arg_from = from.val/32;
-    int arg_end  = end.val/32;
+    //起始位置超过了最大长度直接返回0
+    if(from.val >= 32 * num_args){
+        return 0;
+    }
+
+    int end  = to.val >= 32 * num_args ? 32 * num_args - 1 : to.val;
+
     int count = 0;
+
+    int arg_from = from.val/32;
+    int arg_end = end/32;
 
     for(int i=arg_from;i<=arg_end;i++)
     {
@@ -93,14 +101,14 @@ IntVal RangeBitCount(FunctionContext* context, const IntVal& from, const IntVal&
 
         if(i == arg_from){
             //第一个参数要进行右移，去除低位多余信息
-            bin >>= (from.val % 32);
+            bin >>= from.val % 32;
             //假如有一个参数，那么需要移回去，避免下一步左移截断高位bit的时候出错
-            bin <<= (from.val % 32);
+            bin <<= from.val % 32;
         }
 
         if(i == arg_end){
             //最后一个参数要进行左移，去除高位多余信息
-            bin <<= (32 - (end.val % 32 + 1));
+            bin <<= 31 - end % 32;
         }
 
         count += bin.count();
