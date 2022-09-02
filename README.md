@@ -1,23 +1,26 @@
-#### 编译
-修改CMakeLists.txt的输出路径
-执行 sh ./build.sh
+#### Build
+Change CMakeLists.txt outout path for youself and execute `sh ./build.sh`
 
-#### 包含
-    一个“组内按位‘或’”计算的g_bit_or uda方法
+#### Contain Functions
+    g_bit_or  : group bit 'or' operator 
 
-    两个slideleft(int,int)，slideright(int,int)方法，对应impala中的shift方法
+    slideleft(int,int)  : like shiftleft , only int support
+    slideright(int,int) : like shiftright, only int support
+        there is a bug for shiftleft see https://issues.apache.org/jira/browse/IMPALA-11462?jql=text%20~%20%22shiftleft%22
     
-    用于解决shift方法在进行不确定值进行位移的时候，会强制变为byte进行位移的bug
+    bitcount(int...)    : counts how many true values in args, for example bitcount(15) = 4 , bitcount(3,15) = 6 
     
-    两个bitcount(int...)，range_bitcount(int from,int to,int ...)
-    
-    统计总共有多少个1
-    bitcount(1,3) = 3        
-    
-    15=0x00FF,统计从低位第2位到第3位包含多少个1
-    range_bitcount(2,3,15) = 2  
+    range_bitcount(int from,int to,int ...) : counts how many true values in args with bit range , start from right to left
+        for example 
+        
+        range_bitcount(27,67,15,1,67108864) = 5
+        
+        arg0 = 15                                 arg1 = 1                                  arg2 = 67108864
+                                           to 67                                                 from 27
+        0000 0000 0000 0000 0000 0000 0000 1111 , 0000 0000 0000 0000 0000 0000 0000 0001 , 0000 0100 0000 0000 0000 0000 0000 0000
+                                           1111 , 0000 0000 0000 0000 0000 0000 0000 0001 , 0000 0
 
-#### 案例
+#### g_bit_or CASE
 ```
 create aggregate function g_bit_or(bigint) returns bigint
   location '/user/hive/udf/libudamy.so'
