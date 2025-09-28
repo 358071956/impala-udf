@@ -5,7 +5,7 @@ using namespace std;
 
 /**
  * DROP FUNCTION slideleft(int,int);
- * CREATE FUNCTION slideleft(int,int) RETURNS INT LOCATION '/udf-dir/libudfyouyan.so' symbol='SlideLeft';
+ * CREATE FUNCTION slideleft(int,int) RETURNS INT LOCATION '/udf-dir/libudf.so' symbol='SlideLeft';
  */ 
 IMPALA_UDF_EXPORT
 IntVal SlideLeft(FunctionContext* context, const IntVal& arg1, const IntVal& arg2) {
@@ -16,7 +16,7 @@ IntVal SlideLeft(FunctionContext* context, const IntVal& arg1, const IntVal& arg
 
 /**
  * DROP FUNCTION slideright(int,int);
- * CREATE FUNCTION slideright(int,int) RETURNS INT LOCATION '/udf-dir/libudfyouyan.so' symbol='SlideRight';
+ * CREATE FUNCTION slideright(int,int) RETURNS INT LOCATION '/udf-dir/libudf.so' symbol='SlideRight';
  */ 
 IMPALA_UDF_EXPORT
 IntVal SlideRight(FunctionContext* context, const IntVal& arg1, const IntVal& arg2) {
@@ -42,7 +42,7 @@ IntVal SlideRight(FunctionContext* context, const IntVal& arg1, const IntVal& ar
 
 /**
  * DROP FUNCTION bitcount(int ...);
- * CREATE FUNCTION bitcount(int ...) RETURNS INT LOCATION '/udf-dir/libudfyouyan.so' symbol='BitCount';
+ * CREATE FUNCTION bitcount(int ...) RETURNS INT LOCATION '/udf-dir/libudf.so' symbol='BitCount';
  */
 IMPALA_UDF_EXPORT
 IntVal BitCount(FunctionContext* context, int num_args, const IntVal* args){
@@ -72,7 +72,7 @@ IntVal BitCount(FunctionContext* context, int num_args, const IntVal* args){
  *                                    1111 , 0000 0000 0000 0000 0000 0000 0000 0001 , 0000 0
  * 
  * DROP FUNCTION range_bitcount(int,int,int ...);
- * CREATE FUNCTION range_bitcount(int,int,int ...) RETURNS INT LOCATION '/udf-dir/libudfyouyan.so' symbol='RangeBitCount';
+ * CREATE FUNCTION range_bitcount(int,int,int ...) RETURNS INT LOCATION '/udf-dir/libudf.so' symbol='RangeBitCount';
  */
 IMPALA_UDF_EXPORT
 IntVal RangeBitCount(FunctionContext* context, const IntVal& from, const IntVal& to,int num_args, const IntVal* args){
